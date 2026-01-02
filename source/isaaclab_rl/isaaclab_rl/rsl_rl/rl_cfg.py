@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 from dataclasses import MISSING
-from typing import Literal
+from typing import Literal, Any
 
 from isaaclab.utils import configclass
 
@@ -226,6 +226,94 @@ class RslRlBaseRunnerCfg:
     If regex expression, the latest (alphabetical order) matching file will be loaded.
     """
 
+@configclass
+class RslRlPpoActorCriticCNNCfg:
+    """Configuration for the PPO actor-critic networks with CNN support."""
+
+    class_name: str = "ActorCriticCNN"
+    """The policy class name. Default is ActorCriticCNN."""
+
+    # --- Basic MLP & Noise Settings ---
+    init_noise_std: float = MISSING
+    """The initial noise standard deviation for the policy."""
+
+    noise_std_type: Literal["scalar", "log"] = "scalar"
+    """The type of noise standard deviation for the policy. Default is scalar."""
+
+    state_dependent_std: bool = False
+    """Whether to use state-dependent standard deviation for the policy. Default is False."""
+
+    activation: str = "elu"
+    """The activation function for the actor and critic networks. Default is 'elu'."""
+
+    # --- Normalization ---
+    actor_obs_normalization: bool = False
+    """Whether to normalize the 1D observation for the actor network."""
+
+    critic_obs_normalization: bool = False
+    """Whether to normalize the 1D observation for the critic network."""
+
+    # --- Network Dimensions ---
+    actor_hidden_dims: list[int] = [256, 256, 256]
+    """The hidden dimensions of the actor MLP network (after CNN encoding)."""
+
+    critic_hidden_dims: list[int] = [256, 256, 256]
+    """The hidden dimensions of the critic MLP network (after CNN encoding)."""
+
+    # --- CNN Specific Configurations ---
+    actor_cnn_cfg: object = MISSING
+    """Configuration for the actor CNN. 
+    Can be a single dict (applied to all 2D obs) or a dict of dicts (per obs group).
+    Required if actor receives 2D observations.
+    """
+
+    critic_cnn_cfg: object = MISSING
+    """Configuration for the critic CNN.
+    Can be a single dict (applied to all 2D obs) or a dict of dicts (per obs group).
+    Required if critic receives 2D observations.
+    """
+
+
+@configclass
+class RslRlPpoActorCriticDepthMlpCfg:
+    """Configuration for the PPO actor-critic networks with CNN support."""
+
+    class_name: str = "ActorCriticDepthMLPMixer"
+    """The policy class name. Default is ActorCriticDepthMLPMixer."""
+    # --- Basic MLP & Noise Settings ---
+    init_noise_std: float = MISSING
+    """The initial noise standard deviation for the policy."""
+
+    noise_std_type: Literal["scalar", "log"] = "scalar"
+    """The type of noise standard deviation for the policy. Default is scalar."""
+
+    state_dependent_std: bool = False
+    """Whether to use state-dependent standard deviation for the policy. Default is False."""
+
+    activation: str = "elu"
+    """The activation function for the actor and critic networks. Default is 'elu'."""
+
+    # --- Normalization ---
+    actor_obs_normalization: bool = False
+    """Whether to normalize the 1D observation for the actor network."""
+
+    critic_obs_normalization: bool = False
+    """Whether to normalize the 1D observation for the critic network."""
+
+    # --- Network Dimensions ---
+    actor_hidden_dims: list[int] = [256, 256, 256]
+    """The hidden dimensions of the actor MLP network (after CNN encoding)."""
+
+    critic_hidden_dims: list[int] = [256, 256, 256]
+    """The hidden dimensions of the critic MLP network (after CNN encoding)."""
+
+    # --- CNN Specific Configurations ---
+    actor_mixer_cfg: object = MISSING
+    """Configuration for the actor DepthMLPMixer."""
+
+    # critic_mixer_cfg: dict[str, Any] | None = None
+    # """Configuration for the critic DepthMLPMixer."""
+
 
 @configclass
 class RslRlOnPolicyRunnerCfg(RslRlBaseRunnerCfg):
@@ -234,8 +322,10 @@ class RslRlOnPolicyRunnerCfg(RslRlBaseRunnerCfg):
     class_name: str = "OnPolicyRunner"
     """The runner class name. Default is OnPolicyRunner."""
 
-    policy: RslRlPpoActorCriticCfg = MISSING
+    policy: object = MISSING
     """The policy configuration."""
 
     algorithm: RslRlPpoAlgorithmCfg = MISSING
     """The algorithm configuration."""
+
+
