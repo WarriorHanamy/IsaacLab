@@ -89,6 +89,10 @@ class TerrainImporter:
                 cfg=self.cfg.terrain_generator, device=self.device
             )
             self.import_mesh("terrain", terrain_generator.terrain_mesh)
+            # REC added. 2026-01-05 ---
+            self.terrain_mesh_warp = terrain_generator.terrain_mesh_warp
+            self.terrain_mesh_warp_index = terrain_generator.terrain_mesh_warp_index
+
             if self.cfg.use_terrain_origins:
                 # configure the terrain origins based on the terrain generator
                 self.configure_env_origins(terrain_generator.terrain_origins)
