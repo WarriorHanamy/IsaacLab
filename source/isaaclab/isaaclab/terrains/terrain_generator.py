@@ -162,6 +162,13 @@ class TerrainGenerator:
         self._add_terrain_border()
         # combine all the sub-terrains into a single mesh
         self.terrain_mesh = trimesh.util.concatenate(self.terrain_meshes)
+        # Rec added.
+        self.terrain_mesh_warp = convert_to_warp_mesh(
+            points=self.terrain_mesh.vertices,
+            indices=self.terrain_mesh.faces,
+            device=self.device
+        )
+        self.terrain_mesh_warp_index = self.terrain_mesh_warp.id
 
         # color the terrain mesh
         if self.cfg.color_scheme == "height":
