@@ -50,6 +50,9 @@ exts."omni.kit.widget.toolbar".PlayButton.enabled = false
 # disable replicator orchestrator for better runtime perf
 exts."omni.replicator.core".Orchestrator.enabled = false
 
+# Disable Onshape importer (pint/numpy 2.x compatibility issue)
+exts."omni.importer.onshape".present.enabled = false
+
 [settings.app.settings]
 persistent = true
 dev_build = false

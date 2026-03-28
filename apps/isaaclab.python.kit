@@ -114,6 +114,7 @@ exts."omni.kit.material.library".ui_show_list = [
     "USD Preview Surface",
 ]
 exts."omni.kit.renderer.core".present.enabled = false # Fixes MGPU stability issue
+exts."omni.importer.onshape".present.enabled = false # pint/numpy 2.x compatibility issue
 exts."omni.kit.viewport.window".windowMenu.entryCount = 2 # Allow user to create two viewports by default
 exts."omni.kit.viewport.window".windowMenu.label = "" # Put Viewport menuitem under Window menu
 exts."omni.rtx.window.settings".window_menu = "Window" # Where to put the render settings menuitem
