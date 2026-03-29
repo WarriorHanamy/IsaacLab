@@ -24,22 +24,71 @@ export ISAACLAB_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && p
 
 # install system dependencies
 install_system_deps() {
-    # check if cmake is already installed
-    if command -v cmake &> /dev/null; then
-        echo "[INFO] cmake is already installed."
-    else
-        # check if running as root
+    local missing_deps=()
+    
+    # check for required tools
+    if ! command -v cmake &> /dev/null; then
+        missing_deps+=(cmake)
+    fi
+    if ! command -v make &> /dev/null; then
+        missing_deps+=(make)
+    fi
+    if ! command -v gcc &> /dev/null; then
+        missing_deps+=(gcc)
+    fi
+    if ! command -v g++ &> /dev/null; then
+        missing_deps+=(g++)
+    fi
+    
+    # all dependencies satisfied
+    if [ ${#missing_deps[@]} -eq 0 ]; then
+        echo "[INFO] All system dependencies (cmake, make, gcc, g++) are already installed."
+        return 0
+    fi
+    
+    echo "[INFO] Missing system dependencies: ${missing_deps[*]}"
+    
+    # detect package manager and install
+    if command -v pacman &> /dev/null; then
+        # Arch Linux
+        local arch_pkgs=()
+        for dep in "${missing_deps[@]}"; do
+            case $dep in
+                cmake) arch_pkgs+=(cmake) ;;
+                make|gcc|g++) ;; # covered by base-devel
+            esac
+        done
+        # if any build tools missing, install base-devel
+        for dep in "${missing_deps[@]}"; do
+            if [[ "$dep" == "make" || "$dep" == "gcc" || "$dep" == "g++" ]]; then
+                arch_pkgs+=(base-devel)
+                break
+            fi
+        done
         if [ "$EUID" -ne 0 ]; then
-            echo "[INFO] Installing system dependencies..."
-            sudo apt-get update && sudo apt-get install -y --no-install-recommends \
-                cmake \
-                build-essential
+            sudo pacman -S --noconfirm --needed "${arch_pkgs[@]}"
         else
-            echo "[INFO] Installing system dependencies..."
-            apt-get update && apt-get install -y --no-install-recommends \
-                cmake \
-                build-essential
+            pacman -S --noconfirm --needed "${arch_pkgs[@]}"
         fi
+    elif command -v apt-get &> /dev/null; then
+        # Debian/Ubuntu
+        local apt_pkgs=()
+        for dep in "${missing_deps[@]}"; do
+            case $dep in
+                cmake) apt_pkgs+=(cmake) ;;
+                make|gcc|g++) apt_pkgs+=(build-essential) ;;
+            esac
+        done
+        # deduplicate
+        apt_pkgs=($(printf "%s\n" "${apt_pkgs[@]}" | sort -u))
+        if [ "$EUID" -ne 0 ]; then
+            sudo apt-get update && sudo apt-get install -y --no-install-recommends "${apt_pkgs[@]}"
+        else
+            apt-get update && apt-get install -y --no-install-recommends "${apt_pkgs[@]}"
+        fi
+    else
+        echo "[ERROR] Unsupported package manager. Please install: ${missing_deps[*]}" >&2
+        exit 1
     fi
 }
 
@@ -266,7 +315,7 @@ install_isaaclab_extension() {
     # if the directory contains setup.py then install the python module
     if [ -f "$1/setup.py" ]; then
         echo -e "\t module: $1"
-        $pip_command --editable "$1"
+        $pip_command --no-build-isolation --editable "$1"
     fi
 }
 
@@ -598,8 +647,8 @@ while [[ $# -gt 0 ]]; do
                 shift # past argument
             fi
             # install the learning frameworks specified
-            ${pip_command} -e "${ISAACLAB_PATH}/source/isaaclab_rl[${framework_name}]"
-            ${pip_command} -e "${ISAACLAB_PATH}/source/isaaclab_mimic[${framework_name}]"
+            ${pip_command} --no-build-isolation -e "${ISAACLAB_PATH}/source/isaaclab_rl[${framework_name}]"
+            ${pip_command} --no-build-isolation -e "${ISAACLAB_PATH}/source/isaaclab_mimic[${framework_name}]"
 
             # in some rare cases, torch might not be installed properly by setup.py, add one more check here
             # can prevent that from happening
