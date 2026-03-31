@@ -22,13 +22,13 @@ from .symmetry_cfg import RslRlSymmetryCfg
 class RslRlPpoActorCriticCfg:
     """Configuration for the PPO actor-critic networks."""
 
-    class_name: str = "ActorCritic"
+    class_name: str = 'ActorCritic'
     """The policy class name. Default is ActorCritic."""
 
     init_noise_std: float = MISSING
     """The initial noise standard deviation for the policy."""
 
-    noise_std_type: Literal["scalar", "log"] = "scalar"
+    noise_std_type: Literal['scalar', 'log'] = 'scalar'
     """The type of noise standard deviation for the policy. Default is scalar."""
 
     state_dependent_std: bool = False
@@ -54,7 +54,7 @@ class RslRlPpoActorCriticCfg:
 class RslRlPpoActorCriticRecurrentCfg(RslRlPpoActorCriticCfg):
     """Configuration for the PPO actor-critic networks with recurrent layers."""
 
-    class_name: str = "ActorCriticRecurrent"
+    class_name: str = 'ActorCriticRecurrent'
     """The policy class name. Default is ActorCriticRecurrent."""
 
     rnn_type: str = MISSING
@@ -76,7 +76,7 @@ class RslRlPpoActorCriticRecurrentCfg(RslRlPpoActorCriticCfg):
 class RslRlPpoAlgorithmCfg:
     """Configuration for the PPO algorithm."""
 
-    class_name: str = "PPO"
+    class_name: str = 'PPO'
     """The algorithm class name. Default is PPO."""
 
     num_learning_epochs: int = MISSING
@@ -99,6 +99,9 @@ class RslRlPpoAlgorithmCfg:
 
     entropy_coef: float = MISSING
     """The coefficient for the entropy loss."""
+
+    action_reg_coef: float = 0.0
+    """The coefficient for the action regularization loss (mu^2). Default is 0.0 (disabled)."""
 
     desired_kl: float = MISSING
     """The desired KL divergence."""
@@ -141,7 +144,7 @@ class RslRlBaseRunnerCfg:
     seed: int = 42
     """The seed for the experiment. Default is 42."""
 
-    device: str = "cuda:0"
+    device: str = 'cuda:0'
     """The device for the rl-agent. Default is cuda:0."""
 
     num_steps_per_env: int = MISSING
@@ -191,7 +194,7 @@ class RslRlBaseRunnerCfg:
     experiment_name: str = MISSING
     """The experiment name."""
 
-    run_name: str = ""
+    run_name: str = ''
     """The run name. Default is empty string.
 
     The name of the run directory is typically the time-stamp at execution. If the run name is not empty,
@@ -199,13 +202,13 @@ class RslRlBaseRunnerCfg:
     ``{time-stamp}_{run_name}``.
     """
 
-    logger: Literal["tensorboard", "neptune", "wandb"] = "tensorboard"
+    logger: Literal['tensorboard', 'neptune', 'wandb'] = 'tensorboard'
     """The logger to use. Default is tensorboard."""
 
-    neptune_project: str = "isaaclab"
+    neptune_project: str = 'isaaclab'
     """The neptune project name. Default is "isaaclab"."""
 
-    wandb_project: str = "isaaclab"
+    wandb_project: str = 'isaaclab'
     """The wandb project name. Default is "isaaclab"."""
 
     resume: bool = False
@@ -214,36 +217,37 @@ class RslRlBaseRunnerCfg:
     This flag will be ignored for distillation.
     """
 
-    load_run: str = ".*"
+    load_run: str = '.*'
     """The run directory to load. Default is ".*" (all).
 
     If regex expression, the latest (alphabetical order) matching run will be loaded.
     """
 
-    load_checkpoint: str = "model_.*.pt"
+    load_checkpoint: str = 'model_.*.pt'
     """The checkpoint file to load. Default is ``"model_.*.pt"`` (all).
 
     If regex expression, the latest (alphabetical order) matching file will be loaded.
     """
 
+
 @configclass
 class RslRlPpoActorCriticCNNCfg:
     """Configuration for the PPO actor-critic networks with CNN support."""
 
-    class_name: str = "ActorCriticCNN"
+    class_name: str = 'ActorCriticCNN'
     """The policy class name. Default is ActorCriticCNN."""
 
     # --- Basic MLP & Noise Settings ---
     init_noise_std: float = MISSING
     """The initial noise standard deviation for the policy."""
 
-    noise_std_type: Literal["scalar", "log"] = "scalar"
+    noise_std_type: Literal['scalar', 'log'] = 'scalar'
     """The type of noise standard deviation for the policy. Default is scalar."""
 
     state_dependent_std: bool = False
     """Whether to use state-dependent standard deviation for the policy. Default is False."""
 
-    activation: str = "elu"
+    activation: str = 'elu'
     """The activation function for the actor and critic networks. Default is 'elu'."""
 
     # --- Normalization ---
@@ -278,19 +282,19 @@ class RslRlPpoActorCriticCNNCfg:
 class RslRlPpoActorCriticDepthMlpCfg:
     """Configuration for the PPO actor-critic networks with CNN support."""
 
-    class_name: str = "ActorCriticDepthMLPMixer"
+    class_name: str = 'ActorCriticDepthMLPMixer'
     """The policy class name. Default is ActorCriticDepthMLPMixer."""
     # --- Basic MLP & Noise Settings ---
     init_noise_std: float = MISSING
     """The initial noise standard deviation for the policy."""
 
-    noise_std_type: Literal["scalar", "log"] = "scalar"
+    noise_std_type: Literal['scalar', 'log'] = 'scalar'
     """The type of noise standard deviation for the policy. Default is scalar."""
 
     state_dependent_std: bool = False
     """Whether to use state-dependent standard deviation for the policy. Default is False."""
 
-    activation: str = "elu"
+    activation: str = 'elu'
     """The activation function for the actor and critic networks. Default is 'elu'."""
 
     # --- Normalization ---
@@ -319,7 +323,7 @@ class RslRlPpoActorCriticDepthMlpCfg:
 class RslRlOnPolicyRunnerCfg(RslRlBaseRunnerCfg):
     """Configuration of the runner for on-policy algorithms."""
 
-    class_name: str = "OnPolicyRunner"
+    class_name: str = 'OnPolicyRunner'
     """The runner class name. Default is OnPolicyRunner."""
 
     policy: object = MISSING
@@ -327,5 +331,3 @@ class RslRlOnPolicyRunnerCfg(RslRlBaseRunnerCfg):
 
     algorithm: RslRlPpoAlgorithmCfg = MISSING
     """The algorithm configuration."""
-
-
